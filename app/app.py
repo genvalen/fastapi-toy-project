@@ -13,16 +13,22 @@ class Post(BaseModel):
     published: bool = True
     rating: Optional[int] = None
 
+class updatedPost(BaseModel):
+    title: Optional[str]
+    content: Optional[str]
+    published: Optional[bool] = True
+    rating: Optional[int] = None
+
 
 my_posts = [{"title1": "content1", "id": 1}, {"title2": "content2", "id": 2}]
 
-def find_post(id):
+def find_post(id: int):
     for p in my_posts:
         if p['id'] == id:
             return p
     return
 
-def find_id(id):
+def find_id(id: int):
     for i, p in enumerate(my_posts):
         if p['id'] == id:
             return i
@@ -65,13 +71,34 @@ async def get_post(id: int, response: Response): #path parameters will automatic
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(id: int):
     index = find_id(id)
+    print(id, index)
 
     if not index:
         detail = f"message: post with id {id} not found."
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
 
-    else:
-        my_posts.pop(index)
+    my_posts.pop(index)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@app.put("/posts/{id}")
+async def put_post(id: int, post: Post):
+    index = find_id(id)
+    print(index, id, type(id))
+
+    if not index:
+        detail = f"message: post with id {id} not found."
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+
+    new_post = post.model_dump()
+    new_post["id"] = id
+    my_posts[index] = new_post
+
+    return {"updated post": f"title: {new_post['title']} content: {new_post['content']}"}
+
+
+
+
+
 
