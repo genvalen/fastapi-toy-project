@@ -135,7 +135,6 @@ async def update_post(id: int, post: Post, db: Session = Depends(get_db)):
     # return ({"updated post": updated_post})
 
     post_query = db.query(models.Post).filter(models.Post.id == id)
-    post_payload = post_query.first()
 
     if post_query.first() == None:
         detail = f"Post with id {id} was not found.",
