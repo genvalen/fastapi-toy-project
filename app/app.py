@@ -1,13 +1,12 @@
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi.params import Body
-from pydantic import BaseModel
 from typing import Optional
 from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
 from sqlalchemy.orm import Session
-from . import models
+from . import models, schemas
 from .database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
@@ -18,17 +17,6 @@ app = FastAPI()
 def test_sql(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
     return {"data": posts}
-
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-
-class updatedPost(BaseModel):
-    title: Optional[str]
-    content: Optional[str]
-    published: Optional[bool] = True
-    rating: Optional[int] = None
 
 while True:
     try:
@@ -86,7 +74,7 @@ async def get_post(id: int, db : Session = Depends(get_db)): #path parameters wi
     return {"post": post}
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-async def create_posts(post: Post, db: Session = Depends(get_db)):
+async def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # cursor.execute("""INSERT INTO posts (title, content, published) \
     #         VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
     # created_post = cursor.fetchone()
@@ -124,7 +112,7 @@ async def delete_post(id: int, db : Session = Depends(get_db)):
     return Response(status_code=status.HTTP_404_NOT_FOUND)
 
 @app.put("/posts/{id}")
-async def update_post(id: int, post: Post, db: Session = Depends(get_db)):
+async def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     # cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *""", (post.title, post.content, post.published, str(id),))
     # updated_post = cursor.fetchone()
     # conn.commit()
