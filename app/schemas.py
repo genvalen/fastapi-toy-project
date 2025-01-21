@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, ValidationError
 from datetime import datetime
 
 class PostBase(BaseModel):
@@ -15,3 +15,12 @@ class Post(PostBase):  # model for responses.
 
     class config:  # This class enables pydantic to treat sqlalchemy models like dicts.
         orm_mode = True
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: datetime
