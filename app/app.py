@@ -68,9 +68,6 @@ async def get_post(id: int, db : Session = Depends(get_db)): #path parameters wi
     if not post:
         detail = f"Post with id {id} was not found.",
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
-    db.commit()
-    db.refresh(post)
-
     return post
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
@@ -140,3 +137,11 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+@app.get("/users/{id}", response_model=schemas.UserOut)
+def get_user(id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        detail = f"User with ID {id} does not exist."
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+    return user
