@@ -49,4 +49,4 @@ def find_id(id: int):
 async def root():
     return {"message": "Welcome to my API!!"}
 
-# add authorization
+# add jwt token
