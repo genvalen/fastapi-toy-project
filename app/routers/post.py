@@ -49,7 +49,7 @@ async def create_posts(
     #         VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
     # created_post = cursor.fetchone()
     # conn.commit()
-    created_post = models.Post(**post.model_dump())
+    created_post = models.Post(owner_id=current_user.id, **post.model_dump())
     db.add(created_post)
     db.commit()
     db.refresh(created_post)
@@ -72,9 +72,16 @@ async def delete_post(
 
     post_query = db.query(models.Post).filter(models.Post.id == id)
 
-    if post_query.first() == None:
+    post = post_query.first()
+
+    if post == None:
         detail = f"Post with id {id} was not found.",
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+
+    # confirm that user is deleting a post they own
+    if post.owner_id != current_user.id:
+        detail = "Not authorized to perform requested action.",
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
 
     post_query.delete(synchronize_session=False)
     db.commit()
@@ -102,6 +109,11 @@ async def update_post(
     if post_query.first() == None:
         detail = f"Post with id {id} was not found.",
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+
+    # confirm that user is deleting a post they own
+    if post_query.first().owner_id != current_user.id:
+        detail = "Not authorized to perform requested action.",
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
 
     post_query.update(post.model_dump(), synchronize_session=False)
     db.commit()

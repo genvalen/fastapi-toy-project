@@ -13,6 +13,7 @@ class PostCreate(PostBase):
 class Post(PostBase):  # model for responses.
     id: int
     created_at: datetime
+    owner_id: int
 
     class config:  # This class enables pydantic to treat sqlalchemy models like dicts.
         orm_mode = True
