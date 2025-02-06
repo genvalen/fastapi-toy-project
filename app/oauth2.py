@@ -3,9 +3,11 @@ from jwt.exceptions import InvalidTokenError
 from datetime import datetime, timedelta, timezone
 from fastapi import status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 from typing import Dict, Union
 
-from . import schemas
+from . import schemas, models
+from .database import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # arg should be endpoint for logging in
 
@@ -35,7 +37,7 @@ def verfiy_access_token(token: str, credentials_exception):
     token_data = schemas.TokenData(id=user_id)  # token data currenly only contains ID info
     return token_data
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """
     Verify the token of the current user. If verfied, return user ID.
     """
@@ -44,5 +46,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         detail = "Could not verify credentials",
         headers = {"WWW-Authenticate": "Bearer"},
     )
-    return verfiy_access_token(token, credentials_exception)
-
+    token_data = verfiy_access_token(token, credentials_exception)
+    user = db.query(models.User).filter(models.User.id == token_data.user_id).first()
+    return user

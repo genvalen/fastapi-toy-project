@@ -1,6 +1,6 @@
 from fastapi import Response, status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Any
 from ..database import get_db
 from .. import models, schemas, oauth2
 
@@ -12,7 +12,7 @@ router = APIRouter(
 @router.get("/", response_model=List[schemas.Post])
 async def get_posts(
     db: Session = Depends(get_db),
-    user_id: int = Depends(oauth2.get_current_user)
+    current_user: Any = Depends(oauth2.get_current_user)
     ):
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
@@ -23,7 +23,7 @@ async def get_posts(
 async def get_post(
     id: int,
     db : Session = Depends(get_db),
-    user_id: int = Depends(oauth2.get_current_user)
+    current_user: Any = Depends(oauth2.get_current_user)
     ):
     # cursor.execute("""SELECT * FROM posts WHERE id = %s """, (str(id),))
     # post = cursor.fetchone()
@@ -32,6 +32,7 @@ async def get_post(
     #     raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail=detail)
 
     # return (f"post {id}:", post)
+    print(current_user.email) # test current_user
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
         detail = f"Post with id {id} was not found.",
@@ -42,7 +43,7 @@ async def get_post(
 async def create_posts(
     post: schemas.PostCreate,
     db: Session = Depends(get_db),
-    user_id: int = Depends(oauth2.get_current_user)
+    current_user: Any = Depends(oauth2.get_current_user)
     ):
     # cursor.execute("""INSERT INTO posts (title, content, published) \
     #         VALUES (%s, %s, %s) RETURNING * """, (post.title, post.content, post.published))
@@ -58,7 +59,7 @@ async def create_posts(
 async def delete_post(
     id: int,
     db: Session = Depends(get_db),
-    user_id: int = Depends(oauth2.get_current_user)
+    current_user: Any = Depends(oauth2.get_current_user)
     ):
     # cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """, (str(id),))
     # deleted_post = cursor.fetchone()
@@ -85,7 +86,7 @@ async def update_post(
     id: int,
     post: schemas.PostCreate,
     db: Session = Depends(get_db),
-    user_id: int = Depends(oauth2.get_current_user),
+    current_user: Any = Depends(oauth2.get_current_user),
     ):
     # cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *""", (post.title, post.content, post.published, str(id),))
     # updated_post = cursor.fetchone()
