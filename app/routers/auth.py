@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from .. import models, utils, database
+from .. import schemas, models, utils, database
 from ..oauth2 import create_access_token
 
 router = APIRouter(
@@ -9,7 +9,7 @@ router = APIRouter(
     tags = ["Authentication"],
 )
 
-@router.post("/")
+@router.post("/", response_model=schemas.Token)
 async def login(credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     # Check if email is valid, otherwise raise error
     # Note: OAuth2PasswordRequestForm has the attribute username instead of email.
@@ -26,4 +26,4 @@ async def login(credentials: OAuth2PasswordRequestForm = Depends(), db: Session 
             status_code = status.HTTP_401_UNAUTHORIZED,
         )
     access_token = create_access_token(data={"User": user.id})
-    return {"Access Token": access_token, "Token Type": "Bearer", }
+    return {"access_token": access_token, "token_type": "Bearer", }
