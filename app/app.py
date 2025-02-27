@@ -30,23 +30,3 @@ while True:
         print("the database connection failed.")
         print(f"The error was: {error}")
         time.sleep(2)
-
-my_posts = [{"title1": "content1", "id": 1}, {"title2": "content2", "id": 2}]
-
-def find_post(id: int):
-    for p in my_posts:
-        if p['id'] == id:
-            return p
-    return
-
-def find_id(id: int):
-    for i, p in enumerate(my_posts):
-        if p['id'] == id:
-            return i
-    return
-
-@app.get("/")
-async def root():
-    return {"message": "Welcome to my API!!"}
-
-# add jwt token
