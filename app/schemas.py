@@ -10,11 +10,15 @@ class PostBase(BaseModel):
 class PostCreate(PostBase):
     pass
 
+class UserInfo(BaseModel):
+    id: int
+    email: EmailStr
+
 class Post(PostBase):  # model for responses.
     id: int
     created_at: datetime
     owner_id: int
-
+    owner: UserInfo
     class config:  # This class enables pydantic to treat sqlalchemy models like dicts.
         orm_mode = True
 
@@ -22,9 +26,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
-class UserOut(BaseModel):
-    id: int
-    email: EmailStr
+class UserOut(UserInfo):
     created_at: datetime
 
 class UserLogin(BaseModel):
