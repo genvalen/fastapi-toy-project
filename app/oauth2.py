@@ -8,12 +8,13 @@ from typing import Dict, Union
 
 from . import schemas, models
 from .database import get_db
+from .config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # arg should be endpoint for logging in
 
-SECRET_KEY = "5a0e659da9290463df07dd6485b82ac12e4cb1319e04ca3cb69b00d35c7ae18e"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 
 def create_access_token(data: Dict, expires_delta: Union[timedelta, None] = None):
