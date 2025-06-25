@@ -15,10 +15,14 @@ app.include_router(post.router)
 app.include_router(user.router)
 app.include_router(auth.router)
 
-@app.get("/sqlalchemy")
-def test_sql(db: Session = Depends(get_db)):
-    posts = db.query(models.Post).all()
-    return {"data": posts}
+@app.get("/")
+def index_page():
+    return "Welcome to my FastAPI toy project for demonstrating Oauth2.0 based authentication!"
+
+# @app.get("/sqlalchemy")
+# def test_sql(db: Session = Depends(get_db)):
+#     posts = db.query(models.Post).all()
+#     return {"data": posts}
 
 while True:
     try:
