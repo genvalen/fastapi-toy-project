@@ -14,7 +14,7 @@ class UserInfo(BaseModel):
     id: int
     email: EmailStr
 
-class Post(PostBase):  # model for responses.
+class Post(PostBase):  # Model for responses.
     id: int
     created_at: datetime
     owner_id: int

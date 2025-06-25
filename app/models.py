@@ -5,7 +5,7 @@ from sqlalchemy.orm import RelationshipProperty
 from .database import Base
 
 class Post(Base):
-    __tablename__ = "posts"  # this determines the name of the table in the database
+    __tablename__ = "posts"  # Set the name of the table in the database
 
     # CREATE COLUMNS
     id = Column(Integer, primary_key=True, nullable=False)

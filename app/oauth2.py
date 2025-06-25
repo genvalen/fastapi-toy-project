@@ -10,7 +10,7 @@ from . import schemas, models
 from .database import get_db
 from .config import settings
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # arg should be endpoint for logging in
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # arg must be endpoint used for logging in.
 
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
@@ -35,7 +35,7 @@ def verfiy_access_token(token: str, credentials_exception):
             raise credentials_exception
     except InvalidTokenError:
         raise credentials_exception
-    token_data = schemas.TokenData(user_id=user_id)  # token data currenly only contains ID info
+    token_data = schemas.TokenData(user_id=user_id)  # token data currenly contains ID info only.
     return token_data
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):

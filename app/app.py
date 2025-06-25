@@ -19,7 +19,7 @@ app.include_router(auth.router)
 def index_page():
     return "Welcome to my FastAPI toy project for demonstrating Oauth2.0 based authentication!"
 
-# @app.get("/sqlalchemy")
+# @app.get("/sqlalchemy")  # test database connection.
 # def test_sql(db: Session = Depends(get_db)):
 #     posts = db.query(models.Post).all()
 #     return {"data": posts}
